@@ -12,13 +12,13 @@ async function searchHere(searchedString) {
     await page.type("#searchbox_input", searchedString);
     await page.keyboard.press("Enter");
 
-    /*Upto here working for ddgo*/
 
     await page.waitForSelector(".At_VJ9MlrHsSjbfCtz2_", {timeout: 60000});
 
     const searchResults = await page.evaluate(() => {
         const results = [];
 
+        /*This part is an attribute selector*/
         document.querySelectorAll("li[data-layout='organic']").forEach((item) => {
             // Find all links within these elements
             const links = item.querySelectorAll("a");
@@ -30,6 +30,7 @@ async function searchHere(searchedString) {
         return results;
     });
 
+    /*Just showing the stored links*/
     searchResults.forEach((result, index, array) => {
         console.log(result);
     });
@@ -37,4 +38,5 @@ async function searchHere(searchedString) {
     //press ctrl+c in terminal to kill the process
 }
 
+/*Enter your word to search*/
 searchHere("Javascript")
