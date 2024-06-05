@@ -2,34 +2,36 @@ const puppeteer = require('puppeteer');
 
 async function searchHere(searchedString) {
     const browser = await puppeteer.launch({
-        headless:false,
+        headless: false,
         defaultViewport: false
     });
     const page = await browser.newPage();
 
-    await page.goto("https://www.google.com/");
+    await page.goto("https://www.duckduckgo.com/");
 
-    await page.type(".gLFyf", searchedString);
+    await page.type("#searchbox_input", searchedString);
     await page.keyboard.press("Enter");
 
-    await page.waitForSelector(".g h3", { timeout: 60000 });
+    /*Upto here working for ddgo*/
+
+    await page.waitForSelector(".At_VJ9MlrHsSjbfCtz2_", {timeout: 60000});
 
     const searchResults = await page.evaluate(() => {
         const results = [];
-        document.querySelectorAll("h3").forEach((link) => {
-            const parent = link.closest("a");
-            if (parent) {
-                results.push({
-                    title: link.textContent,
-                    url: parent.href,
-                });
+
+        document.querySelectorAll("li[data-layout='organic']").forEach((item) => {
+            // Find all links within these elements
+            const links = item.querySelectorAll("a");
+
+            for (let link = 0; link < links.length; link+=2) {
+                results.push(links[link].href);
             }
         });
         return results;
     });
 
-    searchResults.forEach((result, index) => {
-        console.log(`${result.url}`);
+    searchResults.forEach((result, index, array) => {
+        console.log(result);
     });
 
     //press ctrl+c in terminal to kill the process
